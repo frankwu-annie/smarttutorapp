@@ -17,6 +17,9 @@ end
 target 'SmartTutorApp' do
   config = use_native_modules!
 
+# Override GoogleUtilities to generate module maps
+pod 'GoogleUtilities', :modular_headers => true
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
