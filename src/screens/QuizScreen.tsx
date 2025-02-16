@@ -393,7 +393,14 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadQuestions = async () => {
     try {
-      const { testType, grade } = route.params;
+      //const { testType, grade } = route.params;
+      const { testType, grade } = route.params || {};
+      
+      if (!testType || !grade) {
+        console.warn('Missing required parameters:', { testType, grade });
+        navigation.replace('MainApp');
+        return;
+      }
       const response = await fetch(
         `https://smart-ai-tutor.com/api/questions/${testType}/${grade}?t=${Date.now()}`
       );

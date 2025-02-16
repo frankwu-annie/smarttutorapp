@@ -224,7 +224,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.featuresList}>
             <Text style={styles.featureItem}>✓ Ad-free experience</Text>
             <Text style={styles.featureItem}>✓ Unlimited daily tests</Text>
-            <Text style={styles.featureItem}>✓ Advanced analytics and progress tracking</Text>
+            <Text style={styles.featureItem}>✓ Better progress tracking & insights</Text>
             <Text style={styles.featureItem}>✓ Priority support</Text>
           </View>
 
@@ -248,7 +248,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   </Text>
                   <Text style={styles.optionPrice}>{option.price}</Text>
                   {option.sku.includes('yearly') && (
-                    <Text style={styles.savingsText}>Save 20%</Text>
+                    <Text style={styles.savingsText}>Save 58%</Text>
                   )}
                 </View>
               </TouchableOpacity>

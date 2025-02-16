@@ -1,3 +1,4 @@
+
 import { 
   initConnection,
   purchaseErrorListener,
@@ -6,7 +7,8 @@ import {
   requestPurchase,
   finishTransaction,
   Product,
-  PurchaseError
+  PurchaseError,
+  ProductPurchase
 } from 'react-native-iap';
 
 // Product IDs for your iOS subscriptions
@@ -32,27 +34,71 @@ class StoreKitService {
 
   async initialize() {
     try {
-      await initConnection();
+      console.log('Initializing IAP connection...');
+      // Enable more detailed logging for development
+      if (__DEV__) {
+        console.log('Running in development mode');
+        console.log('Product IDs to fetch:', subscriptionSkus);
+      }
+      
+      const result = await initConnection();
+      console.log('IAP Connection result:', result);
+      
+      // Add delay to ensure connection is established
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('Requesting products with SKUs:', subscriptionSkus);
 
       // Set up purchase listeners
-      this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase) => {
+      this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase: ProductPurchase) => {
         const receipt = purchase.transactionReceipt;
         if (receipt) {
-          // Validate receipt with your backend here if needed
-          await finishTransaction({ purchase });
+          try {
+            await finishTransaction({ purchase });
+            console.log('Transaction finished:', purchase);
+          } catch (finishError) {
+            console.error('Failed to finish transaction:', finishError);
+          }
         }
       });
 
       this.purchaseErrorSubscription = purchaseErrorListener((error: PurchaseError) => {
         console.error('Purchase error:', error);
-        throw error;
       });
 
       // Load products
-      this.products = await getProducts({ skus: subscriptionSkus });
-      console.log('Available products:', this.products);
+      console.log('Attempting to load products...');
+      try {
+        console.log('Calling getProducts with:', { skus: subscriptionSkus });
+        this.products = await getProducts({ skus: subscriptionSkus });
+        console.log('Raw products response:', this.products);
+        console.log('Available products:', this.products);
+        console.log('Product details:', JSON.stringify(this.products, null, 2));
+        console.log('StoreKit configuration status:', {
+          connectionResult: result,
+          productCount: this.products.length,
+          requestedSkus: subscriptionSkus,
+          productIds: this.products.map(p => p.productId)
+        });
+      } catch (productError) {
+        console.error('Error loading products:', {
+          error: productError,
+          message: productError.message,
+          code: productError.code,
+          stack: productError.stack
+        });
+      }
+
+      if (this.products.length === 0) {
+        console.warn('No products available. Checklist:');
+        console.warn('1. Product IDs match exactly:', subscriptionSkus);
+        console.warn('2. Products are approved in App Store Connect');
+        console.warn('3. Bundle ID matches App Store Connect');
+        console.warn('4. App is in TestFlight or sandbox testing mode');
+      }
     } catch (err) {
       console.error('Failed to initialize IAP:', err);
+      console.error('Error details:', JSON.stringify(err, null, 2));
       throw err;
     }
   }
@@ -63,8 +109,9 @@ class StoreKitService {
 
   async purchaseSubscription(sku: string): Promise<void> {
     try {
-      if (!this.products.find(p => p.productId === sku)) {
-        throw new Error('Invalid product SKU');
+      const product = this.products.find(p => p.productId === sku);
+      if (!product) {
+        throw new Error(`Product ${sku} not found`);
       }
       await requestPurchase({ sku });
     } catch (err) {
@@ -73,7 +120,6 @@ class StoreKitService {
     }
   }
 
-  // Clean up method to be called when the app is closed or the service is no longer needed
   cleanup() {
     if (this.purchaseUpdateSubscription) {
       this.purchaseUpdateSubscription.remove();
@@ -85,79 +131,3 @@ class StoreKitService {
 }
 
 export default StoreKitService;
-
-
-/* import { Platform } from 'react-native';
-import { 
-  initConnection,
-  purchaseErrorListener,
-  purchaseUpdatedListener,
-  getProducts,
-  requestPurchase,
-  finishTransaction,
-  Product
-} from 'react-native-iap';
-
-// Product IDs for your subscriptions
-export const subscriptionSkus = Platform.select({
-  ios: [
-    'com.neobile.smarttutor.monthly',
-    'com.neobile.smarttutor.yearly'
-  ],
-  android: [] // Add Android SKUs if needed in the future
-});
-
-class StoreKitService {
-  private static instance: StoreKitService;
-  private products: Product[] = [];
-
-  private constructor() {}
-
-  static getInstance(): StoreKitService {
-    if (!StoreKitService.instance) {
-      StoreKitService.instance = new StoreKitService();
-    }
-    return StoreKitService.instance;
-  }
-
-  async initialize() {
-    try {
-      await initConnection();
-      // Set up purchase listeners
-      purchaseUpdatedListener(async (purchase) => {
-        const receipt = purchase.transactionReceipt;
-        if (receipt) {
-          await finishTransaction({ purchase });
-        }
-      });
-
-      purchaseErrorListener((error) => {
-        console.error('Purchase error:', error);
-      });
-
-      // Load products
-      if (subscriptionSkus) {
-        this.products = await getProducts({ skus: subscriptionSkus });
-      }
-    } catch (err) {
-      console.error('Failed to initialize IAP:', err);
-      throw err;
-    }
-  }
-
-  getProducts(): Product[] {
-    return this.products;
-  }
-
-  async purchaseSubscription(sku: string): Promise<void> {
-    try {
-      await requestPurchase({ sku });
-    } catch (err) {
-      console.error('Purchase failed:', err);
-      throw err;
-    }
-  }
-}
-
-export default StoreKitService;
- */
