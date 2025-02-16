@@ -122,7 +122,7 @@
             }
           ],
           "productID" : "com.neobile.smarttutor.yearly",
-          "recurringSubscriptionPeriod" : "P1M",
+          "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Smart Tutor Yearly",
           "subscriptionGroupID" : "9C725351",
           "type" : "RecurringSubscription",
