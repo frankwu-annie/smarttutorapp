@@ -10,6 +10,7 @@
 		0C80B921A6F3F58F76C31292 /* libPods-SmartTutorApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-SmartTutorApp.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		287C3D6A2D61332C003488A7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 287C3D692D61332C003488A7 /* StoreKit.framework */; };
+		288CC2D12D62719100447C1E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 288CC2D02D62719100447C1E /* GoogleService-Info.plist */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		B18B4BE6ECED2618DA7F9BFE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -23,6 +24,7 @@
 		287C3D682D613322003488A7 /* SmartTutorApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SmartTutorApp.entitlements; path = SmartTutorApp/SmartTutorApp.entitlements; sourceTree = "<group>"; };
 		287C3D692D61332C003488A7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		288CC2CF2D61809100447C1E /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		288CC2D02D62719100447C1E /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-SmartTutorApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SmartTutorApp.debug.xcconfig"; path = "Target Support Files/Pods-SmartTutorApp/Pods-SmartTutorApp.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-SmartTutorApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SmartTutorApp.release.xcconfig"; path = "Target Support Files/Pods-SmartTutorApp/Pods-SmartTutorApp.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-SmartTutorApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SmartTutorApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				288CC2CF2D61809100447C1E /* Products.storekit */,
+				288CC2D02D62719100447C1E /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* SmartTutorApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -168,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				288CC2D12D62719100447C1E /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				B18B4BE6ECED2618DA7F9BFE /* PrivacyInfo.xcprivacy in Resources */,
 			);

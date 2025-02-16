@@ -225,7 +225,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.featuresList}>
             <Text style={styles.featureItem}>✓ Ad-free experience</Text>
             <Text style={styles.featureItem}>✓ Unlimited daily tests</Text>
-            <Text style={styles.featureItem}>✓ Advanced analytics and progress tracking</Text>
+            <Text style={styles.featureItem}>✓ Advanced progress tracking</Text>
             <Text style={styles.featureItem}>✓ Priority support</Text>
           </View>
 
