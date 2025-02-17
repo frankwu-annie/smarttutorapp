@@ -1,4 +1,3 @@
-/*
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -8,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Image
+  Image,
 } from 'react-native';
 import { auth } from '../config/firebase';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -37,8 +36,8 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [userAnswers, setUserAnswers] = useState<string[]>(new Array(questions.length).fill(null));
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(userAnswers[currentQuestion] || null);
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
 
@@ -48,11 +47,18 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadQuestions = async () => {
     try {
-      const { testType, grade } = route.params;
+      const { testType, grade } = route.params || {};
+
+      if (!testType || !grade) {
+        console.warn('Missing required parameters:', { testType, grade });
+        navigation.replace('Dashboard');
+        return;
+      }
+
       const response = await fetch(
         `https://smart-ai-tutor.com/api/questions/${testType}/${grade}?t=${Date.now()}`
       );
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
       }
@@ -68,6 +74,9 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleAnswer = (answer: string) => {
+    const newAnswers = [...userAnswers];
+    newAnswers[currentQuestion] = answer;
+    setUserAnswers(newAnswers);
     setSelectedAnswer(answer);
   };
 
@@ -87,7 +96,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
 
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
+      setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
     } else {
       setQuizComplete(true);
       await saveQuizResults();
@@ -145,12 +154,33 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
   }
 
   if (quizComplete) {
-    const finalScore = ((score + (selectedAnswer === questions[currentQuestion].correctAnswer ? 1 : 0)) / questions.length) * 100;
+    const totalCorrect = userAnswers.reduce((acc, answer, index) => 
+      acc + (answer === questions[index].correctAnswer ? 1 : 0), 0
+    );
+    const finalScore = (totalCorrect / questions.length) * 100;
+    const wrongQuestions = questions.filter((_, index) => userAnswers[index] !== questions[index].correctAnswer);
+
+    const handleRedoTest = () => {
+      setCurrentQuestion(0);
+      setUserAnswers([]);
+      setScore(0);
+      setQuizComplete(false);
+    };
+
+    const handleRedoWrong = () => {
+      const wrongOnes = questions.filter((_, index) => userAnswers[index] !== questions[index].correctAnswer);
+      setQuestions(wrongOnes);
+      setCurrentQuestion(0);
+      setUserAnswers([]);
+      setScore(0);
+      setQuizComplete(false);
+    };
+
     return (
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Quiz Complete!</Text>
         <Text style={styles.scoreText}>Your Score: {Math.round(finalScore)}%</Text>
-        
+
         {questions.map((q, index) => (
           <View key={index} style={styles.resultCard}>
             <Text style={styles.questionText}>{q.question}</Text>
@@ -173,18 +203,36 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         ))}
 
-        <TouchableOpacity
-          style={styles.button}
-          //onPress={() => navigation.navigate('Dashboard')}
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Dashboard' }],
-            });
-          }}
-        >
-          <Text style={styles.buttonText}>Back to Dashboard</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonThird]}
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Dashboard' }],
+              });
+            }}
+          >
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.buttonThird]}
+            onPress={handleRedoTest}
+          >
+            <Text style={styles.buttonText}>Redo All</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.buttonThird]}
+            onPress={handleRedoWrong}
+            disabled={wrongQuestions.length === 0}
+          >
+            <Text style={styles.buttonText}>
+              Redo Wrong ({wrongQuestions.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     );
   }
@@ -228,21 +276,52 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
           </TouchableOpacity>
         ))}
 
-        <TouchableOpacity
-          style={[styles.button, !selectedAnswer && styles.buttonDisabled]}
-          onPress={handleNext}
-          disabled={!selectedAnswer}
-        >
-          <Text style={styles.buttonText}>
-            {currentQuestion === questions.length - 1 ? 'Finish' : 'Next'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.navigationButtons}>
+          <TouchableOpacity
+            style={[styles.button, !selectedAnswer && styles.buttonDisabled]}
+            onPress={handleNext}
+            disabled={!selectedAnswer}
+          >
+            <Text style={styles.buttonText}>
+              {currentQuestion === questions.length - 1 ? 'Finish' : 'Next'}
+            </Text>
+          </TouchableOpacity>
+          {currentQuestion > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentQuestion(currentQuestion - 1);
+                setSelectedAnswer(userAnswers[currentQuestion - 1] || null);
+              }}
+            >
+              <Text style={styles.backLink}>Back</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  navigationButtons: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  backLink: {
+    color: '#666',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    marginBottom: 20,
+  },
+  buttonThird: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
@@ -297,6 +376,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
+    width: '100%'
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
@@ -341,10 +421,7 @@ const styles = StyleSheet.create({
 });
 
 export default QuizScreen;
-*/
-
-
-import React, { useState, useEffect } from 'react';
+/* import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -741,5 +818,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default QuizScreen;
+export default QuizScreen; */
 
