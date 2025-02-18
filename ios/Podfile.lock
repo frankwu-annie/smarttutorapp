@@ -1669,7 +1669,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNFBApp (21.10.0):
+  - RNFBApp (21.10.1):
     - Firebase/CoreOnly (= 11.8.0)
     - React-Core
   - RNGoogleSignin (13.2.0):
@@ -2088,7 +2088,7 @@ SPEC CHECKSUMS:
   ReactCommon: 8da6c58517fa560d0fc7a9da83093457303ae9f8
   RNCAsyncStorage: 1d119293b08fc8673e775b6f86482a4d9092cc65
   RNCPicker: ffbd7b9fc7c1341929e61dbef6219f7860f57418
-  RNFBApp: 399a4d5f7b39af8a35cd4a8089e6b46f05d65cf2
+  RNFBApp: 297657f2950948285f7d176288aad7bfeb3ba1d5
   RNGoogleSignin: cd46c157cf18109c4951cb8d84b94d6829976f66
   RNIap: daac81aa70fe3ac6d6967c1c8da3dc4b415b73d6
   RNScreens: c8c0b69f667891d474ad1229054d514f06778772
@@ -2096,6 +2096,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 1fd059161b449018342943b095a6d4e69bcaa719
 
-PODFILE CHECKSUM: 4de31d63c5c250eea3df4552942e1f314ec0cfc0
+PODFILE CHECKSUM: 19401d70112e8066577fdda2f32af16b091366b9
 
 COCOAPODS: 1.16.2
