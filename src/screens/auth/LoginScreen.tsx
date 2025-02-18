@@ -42,7 +42,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Text style={styles.title}>SmartTutor</Text>
+      <Text style={styles.title}>Smart Tutor</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
