@@ -329,10 +329,10 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                 {profile?.fullName || "Not set"}
               </Text>
             </View>
-            <View style={styles.infoRow}>
+{/*             <View style={styles.infoRow}>
               <Text style={styles.label}>Email:</Text>
               <Text style={styles.value}>{profile?.email}</Text>
-            </View>
+            </View> */}
             <View style={styles.infoRow}>
               <Text style={styles.label}>Phone:</Text>
               <Text style={styles.value}>

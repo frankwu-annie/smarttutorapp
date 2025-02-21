@@ -45,11 +45,12 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
           </Text>
 
           <View style={styles.featuresList}>
-            <Text style={styles.featureItem}>✓ Ad-free experience</Text>
+            
             <Text style={styles.featureItem}>✓ Unlimited daily tests</Text>
             <Text style={styles.featureItem}>
               ✓ Advanced progress tracking
             </Text>
+            {/* <Text style={styles.featureItem}>✓ Ad-free experience</Text> */}
             <Text style={styles.featureItem}>✓ Priority support</Text>
           </View>
 
@@ -75,7 +76,7 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
                   </Text>
                   <Text style={styles.optionPrice}>{option.price}</Text>
                   {option.sku.includes("yearly") && (
-                    <Text style={styles.savingsText}>Save 20%</Text>
+                    <Text style={styles.savingsText}>Save 66%</Text>
                   )}
                 </View>
               </TouchableOpacity>

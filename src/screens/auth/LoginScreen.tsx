@@ -81,7 +81,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.dividerLine} />
       </View>
       
-      <TouchableOpacity style={styles.googleButton} onPress={async () => {
+      {/* <TouchableOpacity style={styles.googleButton} onPress={async () => {
         try {
           const userCredential = await signInWithGoogle();
           // Create user profile in database
@@ -105,7 +105,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.googleIcon}>G</Text>
           <Text style={styles.googleButtonText}>Sign in with Google</Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.link}>Don't have an account? Sign up</Text>
