@@ -54,6 +54,9 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
   const [subscriptionOptions, setSubscriptionOptions] = useState<SubscriptionOption[]>([]);
   const [loadingSubscription, setLoadingSubscription] = useState(false);
 
+    // Extract default parameters from route.params
+    const { testType = "CogAT_Verbal", grade = "1" } = route.params || {};
+
   // Load quiz questions on mount
   useEffect(() => {
     loadQuestions();
@@ -84,10 +87,22 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadQuestions = async () => {
     try {
-      const { testType, grade } = route.params || {};
+      //const { testType, grade } = route.params || {};
+          // Extract parameters with default values
+    //const { testType = "CogAT_Verbal", grade = "1" } = route.params || {};
+    // You can use testType and grade directly here
+    console.log("Using testType:", testType, "and grade:", grade);
       if (!testType || !grade) {
         console.warn("Missing required parameters:", { testType, grade });
-        navigation.replace("Dashboard");
+        //navigation.replace("Dashboard");
+        return (
+          <View style={styles.loadingContainer}>
+            <Text>Please select a test from the Dashboard.</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}>
+              <Text style={styles.link}>Go to Dashboard</Text>
+            </TouchableOpacity>
+          </View>
+        );
         return;
       }
       const response = await fetch(
@@ -331,7 +346,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
         <ScrollView style={styles.container}>
           <View style={styles.progressContainer}>
             <Text style={styles.progressText}>
-              Question {currentQuestion + 1} of {questions.length}
+              Question {currentQuestion + 1} of {questions.length} - {testType} ({grade})
             </Text>
           </View>
           <View style={styles.questionContainer}>
