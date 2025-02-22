@@ -23,7 +23,6 @@
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = SmartTutorApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		287C3D682D613322003488A7 /* SmartTutorApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SmartTutorApp.entitlements; path = SmartTutorApp/SmartTutorApp.entitlements; sourceTree = "<group>"; };
 		287C3D692D61332C003488A7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		288CC2CF2D61809100447C1E /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		288CC2D02D62719100447C1E /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = SmartTutorApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SmartTutorApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -79,7 +78,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				288CC2CF2D61809100447C1E /* Products.storekit */,
 				288CC2D02D62719100447C1E /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* SmartTutorApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
