@@ -284,6 +284,12 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
         {editing ? (
           <View style={styles.form}>
+
+<View style={styles.infoRow}>
+              <Text style={styles.label}>Email:</Text>
+              <Text style={styles.value}>{profile?.email}</Text>
+            </View>
+            
             <Text style={styles.label}>Full Name</Text>
             <TextInput
               style={styles.input}
@@ -360,10 +366,10 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.label}>Name:</Text>
               <Text style={styles.value}>{profile?.fullName || "Not set"}</Text>
             </View>
-            <View style={styles.infoRow}>
+{/*             <View style={styles.infoRow}>
               <Text style={styles.label}>Email:</Text>
               <Text style={styles.value}>{profile?.email}</Text>
-            </View>
+            </View> */}
             <View style={styles.infoRow}>
               <Text style={styles.label}>Phone:</Text>
               <Text style={styles.value}>

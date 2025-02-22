@@ -346,7 +346,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
         <ScrollView style={styles.container}>
           <View style={styles.progressContainer}>
             <Text style={styles.progressText}>
-              Question {currentQuestion + 1} of {questions.length} - {testType} ({grade})
+               {currentQuestion + 1} of {questions.length} - {testType} (Grade: {grade})
             </Text>
           </View>
           <View style={styles.questionContainer}>
