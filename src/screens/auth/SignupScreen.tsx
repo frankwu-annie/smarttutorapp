@@ -1,4 +1,4 @@
-/* import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Linking,
 } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../../config/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { auth } from '../../config/firebase';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 
@@ -24,15 +24,27 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleSignup = async () => {
     try {
+      // Create Firebase auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        name,
-        email,
-        createdAt: new Date().toISOString(),
-        grade: 'K', // Default grade
-        completedQuizzes: [],
+      
+      // Create user in backend database
+      const response = await fetch('https://smart-ai-tutor.com/api/subscription/' + userCredential.user.uid, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firebaseId: userCredential.user.uid,
+          email: email,
+          selectedGrade: 'K',
+        }),
       });
-        navigation.replace('MainApp');
+
+      if (!response.ok) {
+        throw new Error('Failed to create user profile');
+      }
+
+      navigation.replace('MainApp');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -44,12 +56,14 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Full Name"
+        placeholderTextColor="#999"
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -58,6 +72,7 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#999"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -68,6 +83,25 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.link}>Already have an account? Log in</Text>
       </TouchableOpacity>
+
+      {/* New Links Container */}
+      <View style={styles.linksContainer}>
+        <TouchableOpacity
+          onPress={() =>
+            Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+          }
+        >
+          <Text style={styles.linkText}>Terms of Use</Text>
+        </TouchableOpacity>
+        <Text style={styles.linkSeparator}> | </Text>
+        <TouchableOpacity
+          onPress={() =>
+            Linking.openURL("https://smart-ai-tutor.com/privacy-policy")
+          }
+        >
+          <Text style={styles.linkText}>Privacy Policy</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -106,13 +140,27 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     textAlign: 'center',
   },
+  linksContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#007AFF',
+    fontSize: 14,
+    textDecorationLine: 'underline',
+  },
+  linkSeparator: {
+    marginHorizontal: 8,
+    color: '#007AFF',
+    fontSize: 14,
+  },
 });
 
 export default SignupScreen;
- */
 
-
-import React, { useState } from 'react';
+/* import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -234,3 +282,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignupScreen;
+ */
