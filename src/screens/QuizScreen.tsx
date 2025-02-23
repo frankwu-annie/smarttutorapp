@@ -202,7 +202,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
       setSubscriptionModalVisible(false);
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
-      Alert.alert("Success", "Thank you for subscribing!");
+      Alert.alert("Success", "Thank you for subscribing! Please sign out and log in again.");
     } catch (error) {
       Alert.alert("Error", "Failed to complete purchase. Please try again.");
       console.error("Subscription error:", error);
