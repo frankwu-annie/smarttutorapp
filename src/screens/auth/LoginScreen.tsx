@@ -29,7 +29,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.replace('MainApp');
+      //navigation.replace('MainApp');
     } catch (error) {
       Alert.alert('Error', error.message);
     }

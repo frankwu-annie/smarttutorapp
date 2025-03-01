@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithCredential,  getReactNativePersistence, initializeAuth, onAuthStateChanged} from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDe1uNf8i9CTiu2wie8SlWQUwBtpRtQ7BY',
@@ -42,8 +43,20 @@ export const signInWithGoogle = async () => {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Auth
-export const auth = getAuth(app);
+//export const auth = getAuth(app);
+// Initialize Firebase Auth with persistence
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 
+// Log changes in authentication state
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('Auth state changed: User is signed in:', user);
+  } else {
+    console.log('Auth state changed: No user is signed in.');
+  }
+});
 /* import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 

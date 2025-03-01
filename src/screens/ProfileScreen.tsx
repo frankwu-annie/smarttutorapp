@@ -71,8 +71,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const generateMathProblem = () => ({
-    num1: Math.floor(Math.random() * (70 - 50 + 1)) + 50, // 41-50
-    num2: Math.floor(Math.random() * (30 - 11 + 1)) + 11, // 21-30
+    num1: Math.floor(Math.random() * (20 - 10 + 1)) + 10, // 10-20
+    num2: Math.floor(Math.random() * (10 - 0 + 1)) + 0, // 0-10
   });
 
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
@@ -108,7 +108,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       }
 
       Alert.alert("Success", "Your account has been permanently deleted");
-      navigation.reset({
+      navigation.getParent()?.reset({
         index: 0,
         routes: [{ name: "Login" }],
       });
@@ -216,18 +216,32 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Error", "Failed to update profile");
     }
   };
-
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      navigation.reset({
+      // Dispatch reset on the parent navigator so the "Login" route is recognized.
+      // const parentNav = navigation.getParent();
+      // if (parentNav) {
+      //   parentNav.reset({
+      //     index: 0,
+      //     routes: [{ name: "Login" }],
+      //   });
+      // }
+    } catch (error) {
+      Alert.alert("Error", "Failed to sign out");
+    }
+  };
+  /* const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigation.getParent()?.reset({
         index: 0,
         routes: [{ name: "Login" }],
       });
     } catch (error) {
       Alert.alert("Error", "Failed to sign out");
     }
-  };
+  }; */
 
   const handleChangePassword = async () => {
     try {
@@ -310,7 +324,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>Profile</Text>
-        <Text style={styles.subtitleText}>Support: nanosoftapp@gmail.com</Text>
+        <Text style={styles.subtitleText}> Support: nanosoftapp@gmail.com</Text>
 
         {editing ? (
           <View style={styles.form}>
