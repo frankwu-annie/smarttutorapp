@@ -164,7 +164,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
 
     // For every 6th question, show the subscription upgrade prompt
     if (currentQuestion < questions.length - 1) {
-      if ((currentQuestion + 1) % 6 === 0) {
+      if ((currentQuestion + 1) % 6 === 0 && subscription?.status !== "premium") {
         setSubscriptionModalVisible(true);
         return;
       }
@@ -218,20 +218,83 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
     setLoadingSubscription(true);
     try {
       const storeKit = StoreKitService.getInstance();
-      await storeKit.purchaseSubscription(sku);
-      // On successful purchase, close the modal and proceed to the next question
+      const result = await storeKit.purchaseSubscription(sku);
+      
+      if (result.success) {
+        // On successful purchase, close the modal and proceed to the next question
+        setSubscriptionModalVisible(false);
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
+        Alert.alert(
+          "Success",
+          "Thank you for subscribing! Please sign out and log in again.",
+        );
+      } else if (result.cancelled) {
+        // User cancelled the purchase - just close the modal without error
+        console.log("Purchase cancelled by user");
+        setSubscriptionModalVisible(false);
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
+      } else if (result.error) {
+        // Instead of showing error, verify subscription status via API
+        console.log("Purchase had error, verifying subscription status:", result.error);
+        await verifySubscriptionStatusAfterError();
+      }
+    } catch (error) {
+      // Instead of showing error, verify subscription status via API
+      console.log("Purchase threw exception, verifying subscription status:", error);
+      await verifySubscriptionStatusAfterError();
       setSubscriptionModalVisible(false);
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
-      Alert.alert(
-        "Success",
-        "Thank you for subscribing! Please sign out and log in again.",
-      );
-    } catch (error) {
-      Alert.alert("Error", "Failed to complete purchase. Please try again.");
-      console.error("Subscription error:", error);
     } finally {
       setLoadingSubscription(false);
+    }
+  };
+
+  // New helper function to verify subscription status after error
+  const verifySubscriptionStatusAfterError = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        console.log("No user ID found, treating as cancellation");
+        setSubscriptionModalVisible(false);
+        return;
+      }
+      
+      // Refresh subscription status from server
+      const response = await fetch(
+        `https://smart-ai-tutor.com/api/subscription/${userId}`
+      );
+      
+      if (!response.ok) {
+        console.log("Failed to verify subscription status, treating as cancellation");
+        setSubscriptionModalVisible(false);
+        return;
+      }
+      
+      const data = await response.json();
+      setSubscription(data);
+      
+      if (data.status === "premium") {
+        // User is subscribed! Transaction succeeded despite the error
+        console.log("User is subscribed despite IAP error, proceeding as success");
+        setSubscriptionModalVisible(false);
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(userAnswers[currentQuestion + 1] || null);
+        Alert.alert(
+          "Success",
+          "Thank you for subscribing! Please sign out and log in again.",
+        );
+      } else {
+        // Not subscribed, treat as cancellation
+        console.log("User not subscribed after IAP flow, treating as cancellation");
+        setSubscriptionModalVisible(false);
+      }
+    } catch (error) {
+      console.error("Error verifying subscription after error:", error);
+      // Silently handle error, treat as cancellation
+      setSubscriptionModalVisible(false);
     }
   };
 
@@ -714,6 +777,7 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
     SubscriptionOption[]
   >([]);
   const [loadingSubscription, setLoadingSubscription] = useState(false);
+  const [subscription, setSubscription] = useState<{status: string} | null>(null);
 
   // Extract default parameters from route.params
   const { testType = "CogAT_Verbal", grade = "1" } = route.params || {};
@@ -721,7 +785,26 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
   // Load quiz questions on mount
   useEffect(() => {
     loadQuestions();
+    checkSubscriptionStatus();
   }, []);
+
+  // Check subscription status
+  const checkSubscriptionStatus = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+      
+      const response = await fetch(
+        `https://smart-ai-tutor.com/api/subscription/${userId}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch subscription status");
+      const data = await response.json();
+      setSubscription(data);
+      console.log("Subscription status:", data.status);
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+    }
+  };
 
   // Initialize IAP products for subscription
   useEffect(() => {
@@ -977,10 +1060,36 @@ const QuizScreen: React.FC<Props> = ({ navigation, route }) => {
                 Correct answer: {q.correctAnswer}
               </Text>
               {userAnswers[index] !== q.correctAnswer && q.explanation && (
-                <View style={styles.explanationContainer}>
-                  <Text style={styles.explanationTitle}>Explanation:</Text>
-                  <Text style={styles.explanationText}>{q.explanation}</Text>
-                </View>
+                <>
+                  {subscriptionModalVisible && (
+                    <UpgradePrompt
+                      visible={subscriptionModalVisible}
+                      onClose={() => setSubscriptionModalVisible(false)}
+                      subscriptionOptions={subscriptionOptions}
+                      onSubscribe={handleSubscription}
+                      loadingSubscription={loadingSubscription}
+                    />
+                  )}
+                  
+                  
+                  {auth.currentUser && (
+                    <>
+                      {subscription?.status === "premium" ? (
+                        <View style={styles.explanationContainer}>
+                          <Text style={styles.explanationTitle}>Explanation:</Text>
+                          <Text style={styles.explanationText}>{q.explanation}</Text>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => setSubscriptionModalVisible(true)}
+                          style={styles.showExplanationLink}
+                        >
+                          <Text style={styles.linkText}>Show explanation</Text>
+                        </TouchableOpacity>
+                      )}
+                    </>
+                  )}
+                </>
               )}
             </View>
           ))}
@@ -1256,6 +1365,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textDecorationLine: "underline",
   },
+  showExplanationLink: {
+    marginTop: 10,
+    padding: 8,
+  },
+  linkText: {
+    color: "#007AFF",
+    fontSize: 16,
+    textDecorationLine: "underline",
+  },
 });
 
 export default QuizScreen; */
+
